@@ -1,6 +1,7 @@
 package chatserver
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -43,6 +44,15 @@ func ConnectHandler(w http.ResponseWriter, r *http.Request) {
 				http.StatusBadRequest)
 			return
 		}
+		username := r.FormValue("user")
+		if username == "" {
+			js.Error(w,
+				&js.Response{
+					Message: "user query parameter was not provided",
+				},
+				http.StatusBadRequest)
+			return
+		}
 
 		// Create connection to PubNub
 		pn, err := pubnub.NewPubNub()
@@ -60,7 +70,9 @@ func ConnectHandler(w http.ResponseWriter, r *http.Request) {
 		errorChannel := make(chan []byte)
 
 		// Subscribe to group channel
-		go pn.Subscribe(channel, "", successChannel, false, errorChannel)
+		channelList := fmt.Sprintf("%s,%s", channel, username)
+		fmt.Println(channelList)
+		go pn.Subscribe(channelList, "", successChannel, false, errorChannel)
 
 		// Upgrade to websockets
 		conn, err := websocket.Upgrade(w, r, w.Header(), 1024, 1024)
@@ -101,11 +113,26 @@ func ConnectHandler(w http.ResponseWriter, r *http.Request) {
 				log.Printf(string(err))
 			// Recieved message on websocket read channel, publish to PubNub to update group chat
 			case json := <-WSReadChan:
+				// Is json a direct message?
+				if json.Type == "direct" {
+					// make sure channel is not the current group
+					if json.Channel == channel {
+						log.Printf("attempting to send direct message on group channel, not allowing")
+						continue
+					}
+					err := pubnub.PublishMessage(json.Channel, &json, pn)
+					if err != nil {
+						log.Printf("publshing websocket message to direct channel %s failed: %s", json.Channel, err)
+						continue
+					}
+					continue
+				}
 
 				// Publish received json to PubNub
 				err = pubnub.PublishMessage(channel, &json, pn)
 				if err != nil {
 					log.Printf("publishing websocket messsage to channel %s failed: %s", channel, err)
+					continue
 				}
 				log.Printf("published message: %v to channel: %s", json, channel)
 			}

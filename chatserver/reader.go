@@ -15,7 +15,7 @@ type ValidMessage struct {
 	From string `json:"from"`
 	// Channel tells us where to route this message too. This is mainly used when type
 	// is "direct" and we are sending to a user specific channel
-	Channel string `json:channel`
+	Channel string `json:"channel"`
 	// Text is the text payload of our message
 	Text string `json:"text"`
 }
@@ -27,13 +27,22 @@ func StartReading(conn *websocket.Conn, msgChan chan ValidMessage) {
 		var msg ValidMessage
 		err := conn.ReadJSON(&msg)
 		if err != nil {
-			log.Printf("could not deserialize received websocket message: %s", err)
+			if _, ok := err.(*websocket.CloseError); ok {
+				log.Printf("received websocket close error: %s", err)
+				break
+			}
+
+			log.Printf("received error while unmarshaling websocket message")
 			continue
 		}
 
 		// Validate message
 		if msg.Type == "" {
 			log.Printf("message received without type field")
+			continue
+		}
+		if (msg.Type != "direct") && (msg.Type != "channel") {
+			log.Printf("message received with unknown type")
 			continue
 		}
 		if msg.From == "" {
