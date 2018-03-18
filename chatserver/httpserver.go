@@ -75,7 +75,7 @@ func ConnectHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Start reading off conn for published ws messages
-		WSReadChan := make(chan map[string]interface{})
+		WSReadChan := make(chan ValidMessage)
 		go StartReading(conn, WSReadChan)
 
 		// Enter message routing loop
