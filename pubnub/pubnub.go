@@ -56,6 +56,8 @@ func ExtractMessage(envelope []byte) (map[string]interface{}, error) {
 	}
 }
 
+// PublishMessage is a helper function to publish messages to PubNub. Creates
+// callback channels and waits for responses
 func PublishMessage(pnchan string, msg interface{}, pn *messaging.Pubnub) error {
 	// Create channels to judge results
 	successChannel := make(chan []byte)
