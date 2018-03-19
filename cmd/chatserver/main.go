@@ -6,7 +6,7 @@ import (
 	"github.com/ldelossa/rtchat/chatserver"
 )
 
-var Addr = "localhost:8080"
+var Addr = "0.0.0.0:8080"
 
 func main() {
 	// Get our HTTPServer

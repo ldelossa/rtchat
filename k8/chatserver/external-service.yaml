@@ -1,0 +1,16 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: chatserver-external
+  name: chatserver-external
+spec:
+  selector:
+    app: chatserver
+  ports:
+  - name: chatserver
+    protocol: TCP
+    port: 80
+    targetPort: 8080
+  type: LoadBalancer

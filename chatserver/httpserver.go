@@ -7,6 +7,8 @@ import (
 
 	"github.com/ldelossa/rtchat/pubnub"
 
+	mw "github.com/ldelossa/rtchat/middleware"
+
 	"github.com/gorilla/websocket"
 	js "github.com/ldelossa/rtchat/jsonerror"
 )
@@ -21,7 +23,7 @@ func NewHTTPServer(addr string) *http.Server {
 	m := http.NewServeMux()
 
 	// Attach handlers
-	m.HandleFunc("/chat/connect", ConnectHandler)
+	m.HandleFunc("/chat/connect", mw.JWTCheck(ConnectHandler))
 
 	// Attach mux to server
 	s.Handler = m

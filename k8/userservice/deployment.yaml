@@ -1,0 +1,32 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata: 
+  name: userservice
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: userservice
+      labels:
+        app: userservice
+    spec:
+      volumes:
+        - name: userservice-table
+          configMap:
+            name: userservice-table
+      containers:
+        - name: userservice
+          imagePullPolicy: Always
+          image: gcr.io/nodal-bison-163600/userservice:v1.0.0
+          env:
+            - name: POSTGRESCONNSTR
+              value: "user=postgres dbname=postgres password=postgres host=localhost sslmode=disable"
+          ports:
+            - name: http
+              containerPort: 8080
+        - name: postgres
+          image: postgres:alpine
+          volumeMounts:
+            - name: userservice-table
+              mountPath: /docker-entrypoint-initb.d/
+
