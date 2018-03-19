@@ -42,9 +42,14 @@ func TestDataStore(t *testing.T) {
 
 	addUserTest(t, ds)
 	updateUserTest(t, ds)
+	getUserByUserIDTest(t, ds)
+	getUserByUserNameTest(t, ds)
+	deleteUserTest(t, ds)
 }
 
 func addUserTest(t *testing.T, ds *DataStore) {
+	t.Log("test: addUserTest")
+
 	// Create user
 	u := TestUser
 
@@ -65,6 +70,8 @@ func addUserTest(t *testing.T, ds *DataStore) {
 }
 
 func updateUserTest(t *testing.T, ds *DataStore) {
+	t.Log("test: updateUserTest")
+
 	// Create user
 	u := TestUser
 
@@ -100,6 +107,8 @@ func updateUserTest(t *testing.T, ds *DataStore) {
 }
 
 func getUserByUserIDTest(t *testing.T, ds *DataStore) {
+	t.Log("test: getUserByUserIDTest")
+
 	// Create user
 	u := TestUser
 
@@ -134,6 +143,8 @@ func getUserByUserIDTest(t *testing.T, ds *DataStore) {
 }
 
 func getUserByUserNameTest(t *testing.T, ds *DataStore) {
+	t.Log("test: getUserByUserNameTest")
+
 	// Create user
 	u := TestUser
 
@@ -169,6 +180,8 @@ func getUserByUserNameTest(t *testing.T, ds *DataStore) {
 }
 
 func deleteUserTest(t *testing.T, ds *DataStore) {
+	t.Log("test: deleteUserTest")
+
 	// Create user
 	u := TestUser
 

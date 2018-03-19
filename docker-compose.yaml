@@ -1,0 +1,40 @@
+version: '2'
+services:
+
+  chatserver:
+    container_name: chatserver
+    build: 
+      context: .
+      dockerfile: ./docker/chatserver/Dockerfile
+    image: "ldelossa/chatserver:latest"
+    ports:
+      - "8080:8080"
+    depends_on:
+      - userservice
+
+  userservice:
+    container_name: userservice
+    build:
+      context: .
+      dockerfile: ./docker/userservice/Dockerfile
+    image: "ldelossa/userservice:latest"
+    environment:
+        POSTGRESCONNSTR: "user=dev dbname=userservice password=dev host=postgres sslmode=disable"
+    ports:
+      - "8080:8081"
+    depends_on:
+      - postgres
+
+  postgres:
+    container_name: postgres
+    image: postgres:alpine
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      LC_ALL: C.UTF-8
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: dev
+      POSTGRES_DB: userservice
+    volumes:
+      - ./userservice/postgres/users_tables.sql:/docker-entrypoint-initdb.d/users_table.sql
