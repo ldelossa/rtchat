@@ -1,0 +1,16 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata: 
+  name: chatserver
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: chatserver
+      labels:
+        app: chatserver
+    spec:
+      containers:
+        - name: chatserver
+          imagePullPolicy: Always
+          image: gcr.io/nodal-bison-163600/chatserver:v1.0.0
